@@ -1,13 +1,9 @@
 <p align="center">
 
-  <h2 align="center">HumanRecon: UV texture map and Displacement Prediction based Iterative Refinement </h2>
+  <h2 align="center">CES_2025: Image to 3D Reconstuction & Animation </h2>
   <p align="center">
-    <strong>Jumi Kang</strong></a><sup>1, 2</sup>
-    · 
-    <strong>Mingyu Park</strong></a><sup>1, 2</sup>
-    · 
     <br>
-    <sup>1</sup>Korea Electronics Technology Institute  &nbsp;&nbsp;&nbsp; <sup>2</sup>Polygome &nbsp;&nbsp;&nbsp;
+    <sup>1</sup>Polygom &nbsp;&nbsp;&nbsp; <sup>2</sup>Korea Electronics Technology Institute &nbsp;&nbsp;&nbsp;
     <br>
     </br>
   </p>
