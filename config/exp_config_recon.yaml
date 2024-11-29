@@ -1,0 +1,75 @@
+# SMPL related paths and data
+SMPL:
+  smpl_root: './resource'
+  segmentation: './resource/body_segmentation/smplx/smplx_vert_segmentation.json'
+  smpl_config_root: ''
+
+UV_MAPPING:
+  smplx_mesh: 'smplx_uv/smplx_uv.obj'
+  smplx_mask: 'smplx_uv/smplx_uv_mask.png'
+  uv_mapper: 'smplx_uv/smpl_uv_table.json'
+  lbs_weights: 'smplx_uv/lbs_weights.pickle'
+  smpl_root: './resource/smpl_models'
+  model_type: smplx
+  gender: male
+  use_pca: true
+  num_betas: 10
+  num_pca_comp: 6
+  age: adult
+  ext: pkl
+  use_uv: true
+  use_flat_hand: false
+  use_face_contour: false
+ 
+DIFFUSION:
+  config: './MagicMan/configs/inference/inference-base.yaml'
+  seed: 42
+  res: 512
+
+# data path and configurations
+DATA:
+  data_root: '/mnt/DATASET8T/home/jumi/DATASET/ITW/CES_SET'
+  densepose_root: './libs/one_click_densepose'
+  opt_root: './config/base_config_unet_train.yaml'
+  dataset_name: 'HR'
+  pretrained_model: "./ckps/predtrained/unet_uv/last.ckpt"
+  pretrained_uv_model: "./ckps/predtrained/unet_uv/last.ckpt"
+  pretrained_color_model: "./ckps/predtrained/unet_color/last.ckpt"
+  return_uv: true
+  return_disp: true
+  pred_canon: true
+  dr_loss: true
+  res: 512
+
+# rendering parameters
+RENDER:
+  max_mip_level: 9
+  angles: 2  # for every 15 degrees
+  resolution_render: 512
+  resolution_texture: 1024
+  RGB_MAX: [255.0, 255.0, 255.0]
+  RGB_MEAN: [0.485, 0.456, 0.406]
+  RGB_STD: [0.229, 0.224, 0.225]
+
+# optimization parameters for differential rendering
+OPT:
+  max_iter: 200
+  log_interval: 100
+  lr_base: 0.01
+
+# intrinsic parameters to render images
+CAM:
+  width: 1024
+  height: 1024
+  near: 1
+  far: 600
+  fx: 1448.15468787
+  fy: 1448.15468787
+  px: 512.0
+  py: 512.0
+  scale: 1.0
+  distortion: [0.0, 0.0, 0.0, 0.0, 0.0]
+  projection: perspective
+  cam_center: [0, 0, 300]
+  view_angle: [0, 360, 180]
+  pitch: [0, 10, 11]

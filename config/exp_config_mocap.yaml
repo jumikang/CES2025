@@ -1,0 +1,104 @@
+
+# SMPL related paths and data
+SMPL:
+  smpl_root: './resource'
+  segmentation: 'body_segmentation/smplx/smplx_vert_segmentation.json'
+  uv_mapper: 'smpl_models/smplx_uv/smpl_uv_table.json'
+  model_type: 'smplx'
+  gender: 'male'
+  use_pca: True
+  num_betas: 10
+  pose_format: 'openpose'  # openpifpaf, openpose
+  num_pca_comp: 6
+  age: adult
+  ext: pkl
+  use_flat_hand: False
+  use_face_contour: true
+
+# data path and configurations
+DATA:
+  data_root: '/home/mpark/data/CVPR2025/TRAIN/'
+
+# rendering parameters
+RENDER:
+  max_mip_level: 9
+  angles: 15  # for every 15 degrees
+  use_opengl: True # opengl or cuda
+
+# optimization parameters for differential rendering
+OPT:
+  max_iter: 100000
+  log_interval: 100
+  lr_base: 1e-3
+
+MOCAP:
+  project_root: './ckps/predtrained'
+  standing: False  # human is standing or not (strong constraint)
+  use_pixie: True
+  use_gender: True
+  use_depth: True
+  use_render: True
+  use_recon: False
+  ckpt_depth: 'depth_anything_v2/depth_anything_v2_vitl.pth'
+  save_render: True
+  save_eazymocap: False
+  save_standard: True
+
+CAM:
+  CUR: DEFAULT_METER
+  DEFAULT:
+    width: 1024
+    height: 1024
+    near: 1
+    far: 600
+    fx: 1448.15468787
+    fy: 1448.15468787
+    px: 512.0
+    py: 512.0
+    scale: 1.0
+    distortion: [0.0, 0.0, 0.0, 0.0, 0.0]
+    projection: perspective
+    cam_center: [0, 0, 300]
+
+  DEFAULT_METER: ## meter scale
+    width: 1024
+    height: 1024
+    near: 0.01
+    far: 6
+    fx: 1448.15468787
+    fy: 1448.15468787
+    px: 512.0
+    py: 512.0
+    scale: 1.0
+    distortion: [ 0.0, 0.0, 0.0, 0.0, 0.0 ]
+    projection: perspective
+    cam_center: [ 0, 0, 3.0]
+
+  # intrinsic parameters to render images
+  CAM1024:
+    width: 1024
+    height: 1024
+    near: 0.01
+    far: 3.0
+    fx: 1120.88828216
+    fy: 1120.88828216
+    px: 512.0
+    py: 512.0
+    scale: 1.0
+    distortion: [ 0.0, 0.0, 0.0, 0.0, 0.0 ]
+    projection: perspective
+    cam_center: [ 0, 0, 1.5 ]
+
+  CAM512:
+    width: 512
+    height: 512
+    near: 0.01
+    far: 3.0
+    fx: 560.44414108
+    fy: 560.44414108
+    px: 256.0
+    py: 256.0
+    scale: 1.0
+    distortion: [ 0.0, 0.0, 0.0, 0.0, 0.0 ]
+    projection: perspective
+    cam_center: [ 0, 0, 1.5 ]
