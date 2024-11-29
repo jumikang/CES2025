@@ -8,14 +8,6 @@
     </br>
   </p>
     </p>
-<div align="center">
-  <img src="./assets/teaser.png" alt="HumanRecon: UV texture map and Displacement Prediction based Iterative Refinement" style="width: 80%; height: auto;"></a>
-</div>
-
-<div align="left">
-  Figure 1. Given a reference human image ~
-</div>
-
 
 <div align="left">
   <br>
