@@ -15,13 +15,11 @@
 </div>
 
 
-## 📣 News & TODOs
+## News & TODOs
 - [ ] **[2025.01.xx]** Release inference code and pretrained weights
 - [ ] **[2025.xx.xx]** Release paper and project page
-- [ ] Release reconstruction code.
-- [ ] Release training code.
 
-## 🧰 Models
+## Models
 
 |Model        | Resolution|#Views    |GPU Memery<br>(w/ refinement)|#Training Scans|Datasets|
 |:-----------:|:---------:|:--------:|:--------:|:--------:|:--------:|
@@ -30,19 +28,11 @@
 
 ```
 |--- ckpt/
-|    |--- pretrained_weights/
-|    |--- hr_v1/ or hr_v2/
+|    |--- predtrained/
+|    |--- unet_uv/ or unet_color/
 ```
 
-
-## ⚙️ Setup
-### 1. Clone CES2025
-```bash
-git clone https://github.com/hsil/CES2025.git
-cd CES2025
-```
-
-### 2. Installation
+## Installation
 ```bash
 # Create conda environment
 conda create -n ces25 python=3.10
