@@ -11,7 +11,7 @@
 
 <div align="left">
   <br>
-  This repository will contain the official implementation of <strong>HumanRecon</strong>.
+  This repository will contain the official implementation of <strong>CES2025</strong>.
 </div>
 
 
