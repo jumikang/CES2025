@@ -142,10 +142,10 @@ with gr.Blocks(theme=gr.themes.Soft()) as demo:
                                     camera_position=[90, 90, 90])
         process_button.click(fn=process_mocap, inputs=[input_img, input_pose], outputs=[result])
         reset_button.click(fn=reset_fields, inputs=[], outputs=[input_img, input_pose, result])
-            # with gr.Column():
-            #     output_img = gr.Image(streaming=True)
-            # dep = input_img.stream(process_input, [input_img, transform], [output_img],
-            #                        time_limit=30, stream_every=0.1, concurrency_limit=30)
+        # with gr.Column():
+        #     output_img = gr.Image(streaming=True)
+        # dep = input_img.stream(process_input, [input_img, transform], [output_img],
+        #                        time_limit=30, stream_every=0.1, concurrency_limit=30)
 
     # reconstruction & optimizing tab
     with gr.Tab("Step2: Image to 3D Mesh"):
@@ -159,8 +159,7 @@ with gr.Blocks(theme=gr.themes.Soft()) as demo:
                         with gr.Column(scale=1.0, min_width=50):
                             reset_button = gr.Button(value="Clear")
                     with gr.Row():
-                        examples_image = gr.Examples(examples=[["examples/mg_input.png", "examples/standard_mg.json"],
-                                                               ["examples/mh_input.png", "examples/standard_mh.json"]],
+                        examples_image = gr.Examples(examples=[["examples/jh_input.png", "examples/standard_jh.json"]],
                                                      inputs=[image_file, smpl_file])
                 with gr.Column(scale=4.0):
                     result = gr.Model3D(label="3d mesh reconstruction",
