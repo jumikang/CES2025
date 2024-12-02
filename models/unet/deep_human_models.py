@@ -1,8 +1,8 @@
 from __future__ import print_function
-import torchvision
+# import torchvision
 import torch.nn as nn
 import torch.utils.data
-import torch.optim as optim
+# import torch.optim as optim
 from .unet import ATUNet_UV, UNet, ATUNet_Color
 
 class BaseModule(nn.Module):
@@ -38,21 +38,39 @@ class BaseModule(nn.Module):
             output = {'disp': y_disp}
         return output
 
+# class BaseColorModule(nn.Module):
+#     def __init__(self, im2d_in=3,
+#                  split_last=False):
+#         super(BaseColorModule, self).__init__()
+#         self.split_last = split_last
+#         self.im2im = ATUNet_Color(in_ch=im2d_in, out_ch=3, split_last=self.split_last)
+#
+#         # weight initialization
+#         for m in self.modules():
+#             m = weight_init_basic(m)
+#
+#     def forward(self, x):
+#         y, _ = self.im2im(x)
+#         output = {'color': y}
+#         return output
+
 class BaseColorModule(nn.Module):
     def __init__(self, im2d_in=3,
-                 split_last=False):
+                 split_last=True):
         super(BaseColorModule, self).__init__()
         self.split_last = split_last
-        self.im2im = ATUNet_Color(in_ch=im2d_in, out_ch=3, split_last=self.split_last)
-
+        self.im2normalImg = ATUNet_Color(in_ch=im2d_in, out_ch=9, split_last=self.split_last)
         # weight initialization
         for m in self.modules():
             m = weight_init_basic(m)
 
     def forward(self, x):
-        y, _ = self.im2im(x)
-        output = {'color': y}
+        y = self.im2normalImg(x)
+        output = {'pred_color': y[:, 6:, :, :],
+                  'pred_normal_front':y[:, 0:3, :, :],
+                  'pred_normal_back':y[:, 3:6, :, :]}
         return output
+
 
 class DeepHumanUVNet(nn.Module):
     def __init__(self, opt):

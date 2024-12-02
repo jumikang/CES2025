@@ -577,6 +577,100 @@ class ATUNet_UV(nn.Module):
             d1 = self.Conv_1x1(d2)
         return d1, d2
 
+# class ATUNet_Color(nn.Module):
+#     def __init__(self, in_ch=3, out_ch=1, loader_conf=None, split_last=True):
+#         super(ATUNet_Color, self).__init__()
+#         self.loader_conf = loader_conf
+#         self.split_last = split_last
+#         self.Maxpool = nn.MaxPool2d(kernel_size=2, stride=2)
+#
+#         self.Conv1 = conv_block(ch_in=in_ch, ch_out=64)
+#         self.Conv2 = conv_block(ch_in=64, ch_out=128)
+#         self.Conv3 = conv_block(ch_in=128, ch_out=256)
+#         self.Conv4 = conv_block(ch_in=256, ch_out=512)
+#         # self.Conv5 = conv_block(ch_in=512, ch_out=1024)
+#
+#         # self.Up5 = up_conv(ch_in=1024, ch_out=512)
+#         # self.Att5 = Attention_block(F_g=512, F_l=512, F_int=256)
+#         # self.Up_conv5 = conv_block(ch_in=1024, ch_out=512)
+#
+#         self.Up4 = up_conv(ch_in=512, ch_out=256)
+#         self.Att4 = Attention_block(F_g=256, F_l=256, F_int=128)
+#         self.Up_conv4 = conv_block(ch_in=512, ch_out=256)
+#
+#         self.Up3 = up_conv(ch_in=256, ch_out=256)
+#         self.Att3 = Attention_block(F_g=256, F_l=128, F_int=64)
+#         self.Up_conv3 = conv_block(ch_in=384, ch_out=256)
+#
+#         self.Up2 = up_conv(ch_in=256, ch_out=128)
+#         self.Att2 = Attention_block(F_g=128, F_l=64, F_int=32)
+#         self.Up_conv2 = conv_block(ch_in=192, ch_out=128)
+#
+#         # previous settings.
+#         self.Up3 = up_conv(ch_in=256, ch_out=128)
+#         self.Att3 = Attention_block(F_g=128, F_l=128, F_int=64)
+#         self.Up_conv3 = conv_block(ch_in=256, ch_out=128)
+#
+#         self.Up2 = up_conv(ch_in=128, ch_out=64)
+#         self.Att2 = Attention_block(F_g=64, F_l=64, F_int=32)
+#         self.Up_conv2 = conv_block(ch_in=128, ch_out=64)
+#         self.conv6 = conv_block(ch_in=64, ch_out=64)
+#
+#         self.mask_act = nn.ReLU(inplace=True)
+#
+#         if self.split_last:
+#             self.Conv_1x1_f = nn.Conv2d(32, out_ch // 2, kernel_size=1, stride=1, padding=0)
+#             self.Conv_1x1_b = nn.Conv2d(32, out_ch // 2, kernel_size=1, stride=1, padding=0)
+#         else:
+#             self.Conv_1x1 = nn.Conv2d(64, out_ch, kernel_size=1, stride=1, padding=0)
+#
+#     def forward(self, x):
+#         # encoding path
+#         x1 = self.Conv1(x)
+#
+#         x2 = self.Maxpool(x1)
+#         x2 = self.Conv2(x2)
+#
+#         x3 = self.Maxpool(x2)
+#         x3 = self.Conv3(x3)
+#
+#         x4 = self.Maxpool(x3)
+#         x4 = self.Conv4(x4)
+#
+#         # x5 = self.Maxpool(x4)
+#         # x5 = self.Conv5(x5)
+#
+#         # decoding + concat path
+#         # d5 = self.Up5(x5)
+#         # x4 = self.Att5(g=d5, x=x4)
+#         # d5 = torch.cat((x4, d5), dim=1)
+#         # d5 = self.Up_conv5(d5)
+#
+#         d4 = self.Up4(x4)
+#         x3 = self.Att4(g=d4, x=x3)
+#         d4 = torch.cat((x3, d4), dim=1)
+#         d4 = self.Up_conv4(d4)
+#
+#         d3 = self.Up3(d4)
+#         x2 = self.Att3(g=d3, x=x2)
+#         d3 = torch.cat((x2, d3), dim=1)
+#         d3 = self.Up_conv3(d3)
+#
+#         d2 = self.Up2(d3)
+#         x1 = self.Att2(g=d2, x=x1)
+#         d2 = torch.cat((x1, d2), dim=1)
+#         d2 = self.Up_conv2(d2)
+#         d2 = self.conv6(d2)
+#
+#         if self.split_last:
+#             z1, z2 = torch.chunk(d2, chunks=2, dim=1)
+#             z1_2 = self.Conv_1x1_f(z1)
+#             z2_2 = self.Conv_1x1_b(z2)
+#             d1 = torch.cat((z1_2, z2_2), dim=1)
+#         else:
+#             d1 = self.Conv_1x1(d2)
+#         return d1, d2
+
 class ATUNet_Color(nn.Module):
     def __init__(self, in_ch=3, out_ch=1, loader_conf=None, split_last=True):
         super(ATUNet_Color, self).__init__()
@@ -588,11 +682,11 @@ class ATUNet_Color(nn.Module):
         self.Conv2 = conv_block(ch_in=64, ch_out=128)
         self.Conv3 = conv_block(ch_in=128, ch_out=256)
         self.Conv4 = conv_block(ch_in=256, ch_out=512)
-        # self.Conv5 = conv_block(ch_in=512, ch_out=1024)
+        self.Conv5 = conv_block(ch_in=512, ch_out=1024)
 
-        # self.Up5 = up_conv(ch_in=1024, ch_out=512)
-        # self.Att5 = Attention_block(F_g=512, F_l=512, F_int=256)
-        # self.Up_conv5 = conv_block(ch_in=1024, ch_out=512)
+        self.Up5 = up_conv(ch_in=1024, ch_out=512)
+        self.Att5 = Attention_block(F_g=512, F_l=512, F_int=256)
+        self.Up_conv5 = conv_block(ch_in=1024, ch_out=512)
 
         self.Up4 = up_conv(ch_in=512, ch_out=256)
         self.Att4 = Attention_block(F_g=256, F_l=256, F_int=128)
@@ -619,8 +713,9 @@ class ATUNet_Color(nn.Module):
         self.mask_act = nn.ReLU(inplace=True)
 
         if self.split_last:
-            self.Conv_1x1_f = nn.Conv2d(32, out_ch // 2, kernel_size=1, stride=1, padding=0)
-            self.Conv_1x1_b = nn.Conv2d(32, out_ch // 2, kernel_size=1, stride=1, padding=0)
+            self.Conv_1x1_f = nn.Conv2d(32, 3, kernel_size=1, stride=1, padding=0)
+            self.Conv_1x1_b = nn.Conv2d(32, 3, kernel_size=1, stride=1, padding=0)
+            self.Conv_1x1_cb = nn.Conv2d(35, 3, kernel_size=1, stride=1, padding=0)
         else:
             self.Conv_1x1 = nn.Conv2d(64, out_ch, kernel_size=1, stride=1, padding=0)
 
@@ -637,16 +732,16 @@ class ATUNet_Color(nn.Module):
         x4 = self.Maxpool(x3)
         x4 = self.Conv4(x4)
 
-        # x5 = self.Maxpool(x4)
-        # x5 = self.Conv5(x5)
+        x5 = self.Maxpool(x4)
+        x5 = self.Conv5(x5)
 
         # decoding + concat path
-        # d5 = self.Up5(x5)
-        # x4 = self.Att5(g=d5, x=x4)
-        # d5 = torch.cat((x4, d5), dim=1)
-        # d5 = self.Up_conv5(d5)
+        d5 = self.Up5(x5)
+        x4 = self.Att5(g=d5, x=x4)
+        d5 = torch.cat((x4, d5), dim=1)
+        d5 = self.Up_conv5(d5)
 
-        d4 = self.Up4(x4)
+        d4 = self.Up4(d5)
         x3 = self.Att4(g=d4, x=x3)
         d4 = torch.cat((x3, d4), dim=1)
         d4 = self.Up_conv4(d4)
@@ -666,10 +761,11 @@ class ATUNet_Color(nn.Module):
             z1, z2 = torch.chunk(d2, chunks=2, dim=1)
             z1_2 = self.Conv_1x1_f(z1)
             z2_2 = self.Conv_1x1_b(z2)
-            d1 = torch.cat((z1_2, z2_2), dim=1)
+            z3_2 = self.Conv_1x1_cb(torch.cat((x, z2), dim=1))
+            d1 = torch.cat((z1_2, z2_2, z3_2), dim=1)
         else:
             d1 = self.Conv_1x1(d2)
-        return d1, d2
+        return d1
 
 class ATUNetS(nn.Module):
     def __init__(self, in_ch=3, out_ch1=6, out_ch2=2):
