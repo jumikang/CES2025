@@ -11,15 +11,13 @@
 
 <div align="left">
   <br>
-  This repository will contain the official implementation of <strong>HumanRecon</strong>.
+  This repository will contain the official implementation of <strong>2D to 3D HumanRecon</strong>.
 </div>
 
 
 ## News & TODOs
 - [ ] **[2025.01.xx]** Release inference code and pretrained weights
 - [ ] **[2025.xx.xx]** Release xxx
-- [ ] Release reconstruction code.
-- [ ] Release training code.
 
 ## Models
 
