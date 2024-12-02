@@ -40,3 +40,4 @@ meshzoo
 open3d
 antlr4-python3-runtime==4.9.3
 pip install onnxruntime
+pip install gradio
