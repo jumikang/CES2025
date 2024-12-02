@@ -88,7 +88,7 @@ def process_animation(input_path, motion_path):
     #     data = pickle.load(f)
 
     file_name = input_path.split('/')[-1]
-    data_name = file_name[0:-10]
+    data_name = file_name[0:-14]
     input_dict["input_path"] = input_path
     input_dict["input_motion"] = motion_path
     input_dict["data_name"] = data_name
@@ -171,7 +171,8 @@ with gr.Blocks(theme=gr.themes.Soft()) as demo:
     with gr.Tab("Step3: Animating Reconstructed 3D Mesh"):
         with gr.Row():
             with gr.Column():
-                input_img = gr.Image(label="Input Image", type='filepath')
+                input = gr.Image(label="Input Image", type='filepath')
+                # input = gr.Model3D(label="3d mesh reconstruction")
                 motion_file = gr.File(label="Input motion", type='filepath')
 
                 with gr.Row():
@@ -181,11 +182,11 @@ with gr.Blocks(theme=gr.themes.Soft()) as demo:
                         reset_button = gr.Button(value="Clear")
                 with gr.Row():
                     examples_image = gr.Examples(examples=[["examples/jh_input.png", "examples/t2m-gpt-motion.pkl"]],
-                                                 inputs=[input_img, motion_file])
+                                                 inputs=[input, motion_file])
             with gr.Column(scale=4.0):
                 result = gr.Model3D(label="3d mesh reconstruction")
-        process_button.click(fn=process_animation, inputs=[input_img, motion_file], outputs=[result])
-        reset_button.click(fn=reset_fields, inputs=[], outputs=[input_img, motion_file, result])
+        process_button.click(fn=process_animation, inputs=[input, motion_file], outputs=[result])
+        reset_button.click(fn=reset_fields, inputs=[], outputs=[input, motion_file, result])
         # with gr.Row():
         #     gr.HTML("<img src='path/to/img.png'")
 
