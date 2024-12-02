@@ -35,7 +35,7 @@
 ## Installation
 ```bash
 # Create conda environment
-conda create -n ces25 python=3.10
+conda create -n ces25 python=3.11
 conda activate ces25
 
 # Install PyTorch and other dependencies
