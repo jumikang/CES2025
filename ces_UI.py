@@ -1,10 +1,10 @@
 import gradio as gr
 import yaml
 import torch
-import cv2
-import numpy as np
+
 from diff_renderer.diff_optimizer_recon import Optimizer_recon
 from diff_renderer.optimizer_mocap import Optimizer_mocap
+from fbx_utils.fbx_process import FBX_Generator
 
 theme = gr.themes.Ocean(
     primary_hue="fuchsia",
@@ -59,6 +59,7 @@ def process_recon(input_path, smpl_path):
     params_recon['DATA']['file_name'] = file_name
     input_dict["input_path"] = input_path
     input_dict["input_smplx"] = smpl_path
+    input_dict["save_path"] = './results'
 
     if input_dict is None:
         return "No input dictionary uploaded or file is invalid. Please upload a valid input dictionary."
@@ -73,6 +74,36 @@ def process_recon(input_path, smpl_path):
     except Exception as e:
         return f"An error occurred: {str(e)}"
 
+def process_animation(input_path, motion_path):
+    # # load params
+    # path2config_mocap = './config/exp_config_mocap.yaml'
+    # with open(path2config_mocap, 'r') as f:
+    #     params_mocap = yaml.load(f, Loader=yaml.FullLoader)
+
+    fbx_gen = FBX_Generator(device=device)
+    input_dict = dict()
+
+    # # load
+    # with open('data.pickle', 'rb') as f:
+    #     data = pickle.load(f)
+
+    file_name = input_path.split('/')[-1]
+    data_name = file_name[0:-10]
+    input_dict["input_path"] = input_path
+    input_dict["input_motion"] = motion_path
+    input_dict["data_name"] = data_name
+    input_dict["file_name"] = file_name
+    input_dict["save_path"] = './results'
+
+    if input_dict is None:
+        return "No input dictionary uploaded or file is invalid. Please upload a valid input dictionary."
+    try:
+        out_path = fbx_gen.forward(input_dict)
+        return out_path
+
+    except Exception as e:
+        return f"An error occurred: {str(e)}"
+
 with gr.Blocks(theme=gr.themes.Soft()) as demo:
     # print logos
     with gr.Row():
@@ -82,16 +113,15 @@ with gr.Blocks(theme=gr.themes.Soft()) as demo:
                      container=False,
                      show_fullscreen_button=False,
                      show_label=False, elem_id="logo-img", width=200, height=200)
-            # gr.Image(value="logos/partners.png",
-            #          show_download_button=False,
-            #          container=False,
-            #          show_fullscreen_button=False,
-            #          show_label=False, elem_id="logo-img", width=200, height=200)
+        # gr.Image(value="logos/polygom_thumbnail.jpg",
+        #          show_download_button=False,
+        #          container=False,
+        #          show_fullscreen_button=False,
+        #          show_label=False, elem_id="logo-img", width=1000, height=200)
     with gr.Row():
         gr.Markdown("### We are creating an intuitive solution that allows non-experts to easily generate 3D human models using just images or text inputs.")
 
-
-    # pre-processing & smpl estimation
+    # pre-processing & mocap tab
     with gr.Tab("Step1: Motion Capture"):
         with gr.Row():
             with gr.Column():
@@ -115,6 +145,7 @@ with gr.Blocks(theme=gr.themes.Soft()) as demo:
             #     output_img = gr.Image(streaming=True)
             # dep = input_img.stream(process_input, [input_img, transform], [output_img],
             #                        time_limit=30, stream_every=0.1, concurrency_limit=30)
+
     # reconstruction & optimizing tab
     with gr.Tab("Step2: Image to 3D Mesh"):
         with gr.Row():
@@ -138,8 +169,25 @@ with gr.Blocks(theme=gr.themes.Soft()) as demo:
 
     # animation tab
     with gr.Tab("Step3: Animating Reconstructed 3D Mesh"):
-            with gr.Row():
-                gr.HTML("<img src='path/to/img.png'")
+        with gr.Row():
+            with gr.Column():
+                input_img = gr.Image(label="Input Image", type='filepath')
+                motion_file = gr.File(label="Input motion", type='filepath')
+
+                with gr.Row():
+                    with gr.Column(scale=1.0, min_width=50):
+                        process_button = gr.Button(value="Run")
+                    with gr.Column(scale=1.0, min_width=50):
+                        reset_button = gr.Button(value="Clear")
+                with gr.Row():
+                    examples_image = gr.Examples(examples=[["examples/jh_input.png", "examples/t2m-gpt-motion.pkl"]],
+                                                 inputs=[input_img, motion_file])
+            with gr.Column(scale=4.0):
+                result = gr.Model3D(label="3d mesh reconstruction")
+        process_button.click(fn=process_animation, inputs=[input_img, motion_file], outputs=[result])
+        reset_button.click(fn=reset_fields, inputs=[], outputs=[input_img, motion_file, result])
+        # with gr.Row():
+        #     gr.HTML("<img src='path/to/img.png'")
 
     with gr.Row():
         gr.Image(value="logos/partners.png",
