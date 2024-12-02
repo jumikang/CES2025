@@ -506,6 +506,7 @@ class Optimizer_recon(nn.Module):
         os.makedirs(os.path.join(self.input_var["save_path"], self.params['DATA']['data_name']), exist_ok=True)
         obj_path = os.path.join(self.input_var["save_path"], self.params['DATA']['data_name'],
                                 '%s_opt_recon.obj' % self.params['DATA']['data_name'])
+        opt_mesh.vertices *= 0.3
         opt_mesh.export(obj_path)
         optmize_mesh.export(obj_path.replace('recon.obj', 'recon_wt.obj'))
 

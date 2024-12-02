@@ -99,7 +99,7 @@ class Optimizer_mocap(nn.Module):
 
         obj_path = os.path.join(input_dict["save_path"], input_dict["data_name"],
                                 'standard_%s.obj' % input_dict["data_name"])
-
+        smpl_mesh_standard.vertices *= 30
         smpl_mesh_standard.export(obj_path)
 
         return obj_path
