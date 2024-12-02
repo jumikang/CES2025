@@ -11,7 +11,7 @@ kornia==0.6.9
 matplotlib==3.9.1
 mediapipe==0.10.14
 numpy==1.23.5
-omegaconf
+omegaconf==2.3.0
 opencv_contrib_python==4.10.0.84
 opencv_python==4.6.0.66
 opencv_python_headless==4.10.0.84
@@ -38,3 +38,5 @@ pytorch_msssim
 torchmetrics
 meshzoo
 open3d
+antlr4-python3-runtime==4.9.3
+pip install onnxruntime
