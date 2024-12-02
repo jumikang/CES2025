@@ -1,9 +1,9 @@
 <p align="center">
 
-  <h2 align="center">CES_2025: Image to 3D Reconstuction & Animation </h2>
+  <h2 align="center">CES25: Image to 3D Mesh Reconstruction </h2>
   <p align="center">
     <br>
-    <sup>1</sup>Polygom &nbsp;&nbsp;&nbsp; <sup>2</sup>Korea Electronics Technology Institute &nbsp;&nbsp;&nbsp;
+    <sup>1</sup>Polygome &nbsp;&nbsp;&nbsp; <sup>2</sup>Korea Electronics Technology Institute   &nbsp;&nbsp;&nbsp;
     <br>
     </br>
   </p>
@@ -11,37 +11,57 @@
 
 <div align="left">
   <br>
-  This repository will contain the official implementation of <strong>CES2025</strong>.
+  This repository will contain the official implementation of <strong>HumanRecon</strong>.
 </div>
 
 
 ## News & TODOs
 - [ ] **[2025.01.xx]** Release inference code and pretrained weights
-- [ ] **[2025.xx.xx]** Release paper and project page
+- [ ] **[2025.xx.xx]** Release xxx
+- [ ] Release reconstruction code.
+- [ ] Release training code.
 
 ## Models
 
 |Model        | Resolution|#Views    |GPU Memery<br>(w/ refinement)|#Training Scans|Datasets|
 |:-----------:|:---------:|:--------:|:--------:|:--------:|:--------:|
 |unet_uv      |512x512    |-         |10.0GB    |~2500     |[THuman2.1](https://github.com/ytrock/THuman2.0-Dataset)|
-|unet_color   |1024x1024    |2         |20.0GB    |~5500     |[THuman2.1](https://github.com/ytrock/THuman2.0-Dataset), [2K2K](https://github.com/SangHunHan92/2K2K)|
+|unet_color   |1024x1024  |2         |20.0GB    |~5500     |[THuman2.1](https://github.com/ytrock/THuman2.0-Dataset), [2K2K](https://github.com/SangHunHan92/2K2K)|
 
 ```
 |--- ckpt/
-|    |--- predtrained/
+|    |--- pretrained_weights/
 |    |--- unet_uv/ or unet_color/
 ```
 
-## Installation
+### Installation
 ```bash
 # Create conda environment
 conda create -n ces25 python=3.11
 conda activate ces25
 
 # Install PyTorch and other dependencies
-# pytorch
-conda install pytorch==2.4.1 torchvision==0.19.1 torchaudio==2.4.1 pytorch-cuda=11.8 -c pytorch -c nvidia
+conda install pytorch==2.4.1 torchvision==0.19.1 torchaudio==2.4.1 pytorch-cuda=12.4 -c pytorch -c nvidia
 pip install -r requirements.txt
 
+# detectron2
+cd libs/detectron2
+python setup.py install
+
+# densepose
+cd libs/detectron2/projects/DensePose
+python setup.py install
+
+# uvconverter
+pip install UVTextureConverter
+
+# nvdiffrast
+git clone https://github.com/NVlabs/nvdiffrast.git
+cd nvdiffrast
+python setup.py install
+
+
 ```
+
+
 
