@@ -1,7 +1,7 @@
 import gradio as gr
 import yaml
 import torch
-
+import math
 from diff_renderer.diff_optimizer_recon import Optimizer_recon
 from diff_renderer.optimizer_mocap import Optimizer_mocap
 from fbx_utils.fbx_process import FBX_Generator
@@ -138,7 +138,8 @@ with gr.Blocks(theme=gr.themes.Soft()) as demo:
                     examples_image = gr.Examples(examples=[["examples/jh_input.png", "examples/jh_pose.json"]],
                                                  inputs=[input_img, input_pose])
             with gr.Column(scale=4.0):
-                result = gr.Model3D(label="3d mesh reconstruction")
+                result = gr.Model3D(label="3d mesh reconstruction",
+                                    camera_position=[90, 90, 90])
         process_button.click(fn=process_mocap, inputs=[input_img, input_pose], outputs=[result])
         reset_button.click(fn=reset_fields, inputs=[], outputs=[input_img, input_pose, result])
             # with gr.Column():
@@ -162,7 +163,8 @@ with gr.Blocks(theme=gr.themes.Soft()) as demo:
                                                                ["examples/mh_input.png", "examples/standard_mh.json"]],
                                                      inputs=[image_file, smpl_file])
                 with gr.Column(scale=4.0):
-                    result = gr.Model3D(label="3d mesh reconstruction")
+                    result = gr.Model3D(label="3d mesh reconstruction",
+                                        camera_position=[90, 90, 90])
 
         process_button.click(fn=process_recon, inputs=[image_file, smpl_file], outputs=[result])
         reset_button.click(fn=reset_fields, inputs=[], outputs=[image_file, smpl_file, result])
@@ -172,7 +174,8 @@ with gr.Blocks(theme=gr.themes.Soft()) as demo:
         with gr.Row():
             with gr.Column():
                 # input = gr.Image(label="Input Image", type='filepath')
-                input = gr.Model3D(scale=5.0, min_width=500, height=500)
+                input = gr.Model3D(scale=1, min_width=500, height=500,
+                                   camera_position=[90, 90, 90])
                 motion_file = gr.File(label="Input motion", type='filepath')
 
                 with gr.Row():
