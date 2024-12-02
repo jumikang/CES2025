@@ -3,7 +3,6 @@ import numpy as np
 import torch
 import glob
 import os
-import tempfile
 import cv2
 from torch import nn
 from libs.pixie.options_pixie import ConfiguratorPixie
@@ -53,6 +52,7 @@ class Optimizer_mocap(nn.Module):
         path2image = [input_dict["input_path"]]
         for idx, path in enumerate(path2image):
             path2save = input_dict["save_path"]
+            dataname = input_dict["data_name"]
             os.makedirs(input_dict["save_path"], exist_ok=True)
 
             image = cv2.imread(path, cv2.IMREAD_UNCHANGED)
@@ -76,28 +76,30 @@ class Optimizer_mocap(nn.Module):
                                                                                  init_params=guide_smpl,
                                                                                  vis_smpl=True)
             # save results
+            os.makedirs(os.path.join(input_dict["save_path"], input_dict["data_name"]), exist_ok=True)
             smpl_params['gender'] = self.params['SMPL']['gender']
             if self.params['MOCAP']['save_eazymocap']:
-                mocap.save_smpl_params(smpl_params.copy(), smpl_mesh, f"{path2save}/ezmocap_{input_dict['file_name']}")
+                mocap.save_smpl_params(smpl_params.copy(), smpl_mesh, f"{path2save}/{dataname}/ezmocap_{input_dict['file_name']}")
 
             if self.params['MOCAP']['save_standard']:
                 # convert to standard SMPL parameters.
                 smpl_handler = LightSMPLWrapper(self.params['SMPL'],
                                                 smpl_path=self.params['SMPL']['smpl_root']+'/smpl_models')
                 smpl_params_standard, smpl_mesh_standard = smpl_handler.simple_optimizer(smpl_params, vertices, iters=300)
-                mocap.save_smpl_params(smpl_params_standard, smpl_mesh_standard, f"{path2save}/standard_{input_dict['file_name']}")
+                mocap.save_smpl_params(smpl_params_standard, smpl_mesh_standard, f"{path2save}/{dataname}/standard_{input_dict['file_name']}")
 
             # visualize smpl_model
             if self.params['MOCAP']['save_render']:
                 if image.shape[2] == 3:
                     image = image + np.repeat((1 - mask[:, :, None])*255, repeats=3, axis=2)
-                cv2.imwrite(f"{path2save}/{input_dict['file_name'].replace('.png', '_input.png')}", image)
+                cv2.imwrite(f"{path2save}/{dataname}/{input_dict['file_name']}", image)
                 # cv2.imwrite(f"{path2save}/{input_dict['file_name'].replace('.png', '_rendered_normal.png')}",
                 #             (rendered['normal'].detach().cpu().numpy()+1)/2*255.0)
 
-        obj_file = tempfile.NamedTemporaryFile(suffix='.obj', delete=False)
-        obj_path = obj_file.name
-        print(obj_path)
+
+        obj_path = os.path.join(input_dict["save_path"], input_dict["data_name"],
+                                'standard_%s.obj' % input_dict["data_name"])
+
         smpl_mesh_standard.export(obj_path)
 
         return obj_path

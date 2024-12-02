@@ -7,7 +7,6 @@ import pickle
 import trimesh
 import torchvision
 from torchvision import transforms
-import tempfile
 torchvision.disable_beta_transforms_warning()
 
 from PIL import Image
@@ -472,8 +471,8 @@ class Optimizer_recon(nn.Module):
         self.smpl_mesh.update_seam(vertices=self.smpl_mesh.vertices)
         self.smpl_mesh.vertices += (disp / 100)
         self.smpl_mesh.lbs_weights = self.lbs_weights
-        canonical_mesh = self.smpl_mesh.to_trimesh(with_texture=True)
-        canonical_mesh.export('canon_recon.obj')
+        self.canonical_mesh_pred = self.smpl_mesh.to_trimesh(with_texture=True)
+        self.canonical_mesh_pred.export('canon_recon.obj')
 
         # get posed smplx deformed model
         v_deformed = self.smpl_mesh.forward_skinning(smpl_params, self.smpl_mesh.vertices[None, :, :])
@@ -483,9 +482,9 @@ class Optimizer_recon(nn.Module):
                                       self.smpl_mesh.seam,
                                       self.smpl_mesh.tex * 255,
                                       device=self.device)
-        mesh_out = self.mesh_pred.to_trimesh(with_texture=True)
-        mesh_out.export('pred_posed.obj')
-        print('wait..')
+        # mesh_out = self.mesh_pred.to_trimesh(with_texture=True)
+        # mesh_out.export('pred_posed.obj')
+        # print('wait..')
 
     def pipeline(self):
         self()
@@ -498,10 +497,28 @@ class Optimizer_recon(nn.Module):
                                    faces=(self.mesh_pred.indices).detach().cpu().numpy(),
                                    vertex_colors=(vertex_colors_new[:, 0:3]).detach().numpy().astype(np.uint8))
 
-        obj_file = tempfile.NamedTemporaryFile(suffix='.obj', delete=False)
-        obj_path = obj_file.name
-        print(obj_path)
+        opt_mesh_canon = trimesh.Trimesh(vertices=(self.smpl_mesh.vertices).detach().cpu().numpy(),
+                                         faces=(self.smpl_mesh.indices).detach().cpu().numpy(),
+                                         vertex_colors=(vertex_colors_new[:, 0:3]).detach().numpy().astype(np.uint8))
+
+        obj_path = os.path.join(self.input_var["save_path"], self.params['DATA']['data_name'],
+                                'opt_recon_%s.obj' % self.params['DATA']['data_name'])
         opt_mesh.export(obj_path)
+
+        obj_canon_path = os.path.join(self.input_var["save_path"], self.params['DATA']['data_name'],
+                                'opt_recon_canon_%s.obj' % self.params['DATA']['data_name'])
+        opt_mesh_canon.export(obj_canon_path)
+
+        joint_path = os.path.join(self.input_var["save_path"], self.params['DATA']['data_name'],
+                                '%s_joints.pickle' % self.params['DATA']['data_name'])
+        lbs_path = os.path.join(self.input_var["save_path"], self.params['DATA']['data_name'],
+                                '%s_lbs.pickle' % self.params['DATA']['data_name'])
+        smpl_joint = (self.smpl_mesh.joints).detach().cpu()
+        smpl_lbs = (self.smpl_mesh.lbs_weights).detach().cpu()
+        with open(joint_path, 'wb') as f:
+            pickle.dump(smpl_joint, f, pickle.HIGHEST_PROTOCOL)
+        with open(lbs_path, 'wb') as f:
+            pickle.dump(smpl_lbs, f, pickle.HIGHEST_PROTOCOL)
 
         return obj_path
 
@@ -585,4 +602,7 @@ class Optimizer_recon(nn.Module):
             optimizer.zero_grad()
             loss.backward(retain_graph=True)
             optimizer.step()
+
+        self.smpl_mesh.tex = texture_opt
+        self.smpl_mesh.disp = disp_opt
         self.mesh_pred.detach()
