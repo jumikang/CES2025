@@ -92,7 +92,7 @@ def process_animation(input_path, motion_path):
     input_dict["input_path"] = input_path
     input_dict["input_motion"] = motion_path
     input_dict["data_name"] = data_name
-    input_dict["file_name"] = file_name
+    # input_dict["file_name"] = file_name
     input_dict["save_path"] = './results'
 
     if input_dict is None:
@@ -171,19 +171,19 @@ with gr.Blocks(theme=gr.themes.Soft()) as demo:
     with gr.Tab("Step3: Animating Reconstructed 3D Mesh"):
         with gr.Row():
             with gr.Column():
-                input = gr.Image(label="Input Image", type='filepath')
-                # input = gr.Model3D(label="3d mesh reconstruction")
+                # input = gr.Image(label="Input Image", type='filepath')
+                input = gr.Model3D(scale=5.0, min_width=500, height=500)
                 motion_file = gr.File(label="Input motion", type='filepath')
 
                 with gr.Row():
-                    with gr.Column(scale=1.0, min_width=50):
+                    with gr.Column():
                         process_button = gr.Button(value="Run")
-                    with gr.Column(scale=1.0, min_width=50):
+                    with gr.Column():
                         reset_button = gr.Button(value="Clear")
                 with gr.Row():
-                    examples_image = gr.Examples(examples=[["examples/jh_input.png", "examples/t2m-gpt-motion.pkl"]],
+                    examples_image = gr.Examples(examples=[["examples/jh_opt_recon.obj", "examples/t2m-gpt-motion.pkl"]],
                                                  inputs=[input, motion_file])
-            with gr.Column(scale=4.0):
+            with gr.Column(scale=1.0):
                 result = gr.Model3D(label="3d mesh reconstruction")
         process_button.click(fn=process_animation, inputs=[input, motion_file], outputs=[result])
         reset_button.click(fn=reset_fields, inputs=[], outputs=[input, motion_file, result])
