@@ -24,7 +24,7 @@
 |Model        | Resolution|#Views    |GPU Memery<br>(w/ refinement)|#Training Scans|Datasets|
 |:-----------:|:---------:|:--------:|:--------:|:--------:|:--------:|
 |unet_uv      |512x512    |-         |10.0GB    |~2500     |[THuman2.1](https://github.com/ytrock/THuman2.0-Dataset)|
-|unet_color   |512x512    |2         |20.0GB    |~5500     |[THuman2.1](https://github.com/ytrock/THuman2.0-Dataset), [2K2K](https://github.com/SangHunHan92/2K2K)|
+|unet_color   |1024x1024    |2         |20.0GB    |~5500     |[THuman2.1](https://github.com/ytrock/THuman2.0-Dataset), [2K2K](https://github.com/SangHunHan92/2K2K)|
 
 ```
 |--- ckpt/
