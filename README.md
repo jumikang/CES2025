@@ -39,7 +39,8 @@ conda create -n ces25 python=3.11
 conda activate ces25
 
 # Install PyTorch and other dependencies
-pip install torch==2.0.1 torchvision==0.15.2 torchaudio==2.0.2
+# pytorch
+conda install pytorch==2.4.1 torchvision==0.19.1 torchaudio==2.4.1 pytorch-cuda=11.8 -c pytorch -c nvidia
 pip install -r requirements.txt
 
 ```
