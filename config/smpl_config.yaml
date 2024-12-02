@@ -1,0 +1,45 @@
+DEFAULT:
+  smpl_root: './resource/smpl_models/smplx'
+  regressor: 'J_regressor_body25_smplx.txt'
+  segmentation: 'body_segmentation/smplx/smplx_vert_segmentation.json'
+  model_type: 'smplx'
+  gender: 'female'
+  use_pca: False
+  num_betas: 10
+  pose_format: 'openpose'  # openpifpaf, openpose
+  num_pca_comp: 6
+  age: adult
+  ext: pkl
+  use_flat_hand: true
+  use_face_contour: true
+
+RP:
+  model: smplx
+  gender: neutral
+  use_pca: false
+  num_betas: 10
+  num_pca_comp: 6
+  age: adult
+  use_flat_hand: false
+  use_face_contour: true
+
+TH:
+  model: smplx
+  gender: neutral
+  use_pca: false
+  num_betas: 10
+  num_pca_comp: 6
+  age: adult
+  use_flat_hand: false
+  use_face_contour: true
+
+# 4090
+IOYS:
+  model: smplx
+  gender: neutral
+  use_pca: false
+  num_betas: 10
+  num_pca_comp: 6
+  age: adult
+  use_flat_hand: true
+  use_face_contour: true

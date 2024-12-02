@@ -1,0 +1,29 @@
+# new configuration file format for 2024 IOYS photobooth
+
+CAM_512:
+  width: 512
+  height: 512
+  near: 100
+  far: 600
+  fx: 724.077343935
+  fy: 724.077343935
+  px: 256.0
+  py: 256.0
+  # distortion coefficients
+  distortion: [ 0.0, 0.0, 0.0, 0.0, 0.0 ]
+  projection: perspective
+  cam_center: [ 0, 0, 300 ]
+
+CAM_1024:
+  width: 1024
+  height: 1024
+  near: 200
+  far: 400
+  fx: 1448.15468787
+  fy: 1448.15468787
+  px: 512.0
+  py: 512.0
+  # distortion coefficients
+  distortion: [ 0.0, 0.0, 0.0, 0.0, 0.0 ]
+  projection: perspective
+  cam_center: [ 0, 0, 300 ]
