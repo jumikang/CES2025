@@ -243,8 +243,8 @@ class Optimizer_recon(nn.Module):
         self.max_iter = params['OPT']['max_iter']
         self.lr = params['OPT']['lr_base']
         self.render = Renderer(params['RENDER'], orthographic=self.orthographic, device=device)
-        self.weights = {'color': 1.0, 'per': 0.1, 'depth': 1e-1, 'disp': 1e-1, 'normal': 1.0, 'texture': 1e-1,
-                        'seam': 50.0, 'smooth': 1e-4, 'laplacian': 10.0, 'symmetry': 0.0}
+        self.weights = {'color': 5.0, 'per': 0.1, 'depth': 1e-1, 'disp': 1.0, 'normal': 5.0, 'texture': 1e-1,
+                        'seam': 80.0, 'smooth': 1e-4, 'laplacian': 10.0, 'symmetry': 0.0}
         self.log_interval = 10
         self.scheduler_interval = 100
 
@@ -382,10 +382,12 @@ class Optimizer_recon(nn.Module):
             image = cv2.resize(image, dsize=(self.res, self.res), interpolation=cv2.INTER_AREA)
 
         # mask = self.rmbg(Image.fromarray(image[:, :, 0:3]))
-        mask = remove(image)
-        alpha_image = mask.copy()
-        mask = torch.Tensor(mask[:, :, -1][:, :, None]).expand(mask.shape[0],
-                                                               mask.shape[1], 3).to(torch.uint8).to(self.device)
+        rembg_image = remove(image)
+        alpha_image = rembg_image.copy()
+        # mask = cv2.erode(rembg_image[:, :, -1], self.erode_kernel, cv2.BORDER_REFLECT, iterations=3)
+        mask = rembg_image[:, :, -1]
+        mask = torch.Tensor(mask[:, :, None]).expand(mask.shape[0],
+                                                     mask.shape[1], 3).to(torch.uint8).to(self.device)
         mask[mask<=128] = 0
         mask[mask>128] = 1
 
@@ -393,28 +395,33 @@ class Optimizer_recon(nn.Module):
         input_data = self.load_inputs(alpha_image, input_dense_uv)
         input = torch.cat([input_data['image_512'], input_data['dense_512']], dim=1)
         self.input_var["uv_pred"] = self.model_uv.in_the_wild_step(input)
-        self.input_var["color_pred"] = self.model_color.in_the_wild_step(input_data['image_1024'])
-        self.input_var["color_pred"]['color'][0]  = (self.input_var["color_pred"]['color'][0]
-                                                     * self.RGB_STD.view(3, 1, 1)
-                                                     + self.RGB_MEAN.view(3, 1, 1))
+        self.input_var["pred"] = self.model_color.in_the_wild_step(input_data['image_1024'])
+        self.input_var["pred"]['pred_color'][0] = (self.input_var["pred"]['pred_color'][0]
+                                                   * self.RGB_STD.view(3, 1, 1)
+                                                   + self.RGB_MEAN.view(3, 1, 1))
+        self.input_var["pred"]['pred_normal_front'][0]  = (self.input_var["pred"]['pred_normal_front'][0]
+                                                           * self.RGB_STD.view(3, 1, 1)
+                                                           + self.RGB_MEAN.view(3, 1, 1))
+        self.input_var["pred"]['pred_normal_back'][0]  = (self.input_var["pred"]['pred_normal_back'][0]
+                                                           * self.RGB_STD.view(3, 1, 1)
+                                                           + self.RGB_MEAN.view(3, 1, 1))
+        # self.input_var["pred"]['pred_normal_front'][0]  = (self.input_var["pred"]['pred_normal_front'][0] + 1) / 2
+        # self.input_var["pred"]['pred_normal_back'][0]  = (self.input_var["pred"]['pred_normal_back'][0] + 1) / 2
         self.input_var["mask"] = mask
 
-    def load_image_normal(self, image, normal=None):
+    def load_image_normal(self, pred):
         pred_color_f = None
-        pred_color_np = (image[0].permute(1, 2, 0).detach().cpu().numpy() * 255.0).astype(np.uint8)
-        pred_color_b = self.normalize_image(Image.fromarray(pred_color_np))
-        pred_color_b = pred_color_b.permute(1, 2, 0)
+        # pred_color_np = (pred['pred_color'][0].permute(1, 2, 0).detach().cpu().numpy() * 255.0).astype(np.uint8)
+        # pred_normal_front_np = (pred['pred_normal_front'][0].permute(1, 2, 0).detach().cpu().numpy() * 255.0).astype(np.uint8)
+        # pred_normal_back_np = (pred['pred_normal_back'][0].permute(1, 2, 0).detach().cpu().numpy() * 255.0).astype(np.uint8)
 
-        if normal is not None:
-            pred_normal_f = self.normalize_image(normal[0])
-            pred_normal_b = self.normalize_image(normal[1])
-            pred_normal_f = (pred_normal_f * 2 - 1).permute(1, 2, 0)
-            pred_normal_b = (pred_normal_b * 2 - 1).permute(1, 2, 0)
-            pred_normal_f = pred_normal_f[:, :, [2, 1, 0]]
-            pred_normal_b = pred_normal_b[:, :, [2, 1, 0]]
-        else:
-            pred_normal_f = None
-            pred_normal_b = None
+        # pred_color_b = self.normalize_image(Image.fromarray(pred_color_np))
+        # pred_normal_f = self.normalize_image(Image.fromarray(pred_normal_front_np))
+        # pred_normal_b = self.normalize_image(Image.fromarray(pred_normal_back_np))
+
+        pred_color_b = pred['pred_color'][0].permute(1, 2, 0)
+        pred_normal_f = (pred['pred_normal_front'][0] * 2 - 1).permute(1, 2, 0)
+        pred_normal_b = (pred['pred_normal_back'][0] * 2 - 1).permute(1, 2, 0)
 
         return pred_color_f, pred_color_b, pred_normal_f, pred_normal_b
 
@@ -435,17 +442,11 @@ class Optimizer_recon(nn.Module):
 
     def init_ref_imgs(self):
         color_front = self.normalize_image(self.input_var["image_input"])[[2, 1, 0], :, :]
+        _, pred_color_b, pred_normal_f, pred_normal_b\
+            = self.load_image_normal(self.input_var["pred"])
 
-        if "normal_pred" in self.input_var:
-            _, pred_color_b, pred_normal_f, pred_normal_b \
-                = self.load_image_normal(self.input_var["color_pred"]["color"], self.input_var["normal_pred"])
-            tgt_normals = [pred_normal_f.to(self.device), pred_normal_b.to(self.device)]
-        else:
-            _, pred_color_b, _, _ \
-                = self.load_image_normal(self.input_var["color_pred"]["color"])
-            tgt_normals = None
         tgt_images = [color_front.permute(1, 2, 0).to(self.device), pred_color_b.to(self.device)]
-
+        tgt_normals = [pred_normal_f.to(self.device), pred_normal_b.to(self.device)]
         return tgt_images, tgt_normals
 
     def smplx_base_recon(self):
@@ -489,6 +490,7 @@ class Optimizer_recon(nn.Module):
     def pipeline(self):
         self()
         vertex_colors = self.mesh_pred.uv_sampling(mode='color')
+        optmize_mesh = self.mesh_pred.to_trimesh(with_texture=True)
         vertex_colors_new = torch.ones(vertex_colors.shape[0], 4)
         vertex_colors_new *= 255.0
         vertex_colors_new[:, 0:3] = vertex_colors[:, [2, 1, 0]] * 255
@@ -501,12 +503,14 @@ class Optimizer_recon(nn.Module):
                                          faces=(self.smpl_mesh.indices).detach().cpu().numpy(),
                                          vertex_colors=(vertex_colors_new[:, 0:3]).detach().numpy().astype(np.uint8))
 
+        os.makedirs(os.path.join(self.input_var["save_path"], self.params['DATA']['data_name']), exist_ok=True)
         obj_path = os.path.join(self.input_var["save_path"], self.params['DATA']['data_name'],
-                                'opt_recon_%s.obj' % self.params['DATA']['data_name'])
+                                '%s_opt_recon.obj' % self.params['DATA']['data_name'])
         opt_mesh.export(obj_path)
+        optmize_mesh.export(obj_path.replace('recon.obj', 'recon_wt.obj'))
 
         obj_canon_path = os.path.join(self.input_var["save_path"], self.params['DATA']['data_name'],
-                                'opt_recon_canon_%s.obj' % self.params['DATA']['data_name'])
+                                '%s_opt_recon_canon.obj' % self.params['DATA']['data_name'])
         opt_mesh_canon.export(obj_canon_path)
 
         joint_path = os.path.join(self.input_var["save_path"], self.params['DATA']['data_name'],
@@ -572,7 +576,7 @@ class Optimizer_recon(nn.Module):
                 # compute losses
                 loss += self.l2_loss(render_pred[v]['color'][0] * mask, tgt_images[v] * mask) * self.weights["color"]
                 loss += self.l2_loss(render_pred[v]["disp_uv"], render_pred[v]["disp_cv"]) * self.weights["disp"]
-                if tgt_normals is not None and v==0:
+                if tgt_normals is not None:
                     loss += self.l2_loss(render_pred[v]['normal'] * mask, tgt_normals[v] * mask) * self.weights["normal"]
 
                 # mesh smoothness
@@ -598,6 +602,16 @@ class Optimizer_recon(nn.Module):
 
                 if (k % self.scheduler_interval) == 0:
                     scheduler.step()
+
+                # if (k % self.log_interval) == 0:
+                #     result = np.concatenate([(tgt_images[v] * mask).detach().cpu().numpy(),
+                #                              (render_pred[v]['color'][0] * mask).detach().cpu().numpy()], axis=1)
+                #     cv2.imwrite('rendered_color.png', result * 255.0)
+                #
+                #     result = np.concatenate([(((tgt_normals[v] + 1) / 2) * mask).detach().cpu().numpy(),
+                #                              (((render_pred[v]["normal"] + 1) / 2) * mask).squeeze(0).detach().cpu().numpy()], axis=1)
+                #     cv2.imwrite('rendered_normal.png', result * 255.0)
+                #     print('wait..')
 
             optimizer.zero_grad()
             loss.backward(retain_graph=True)
