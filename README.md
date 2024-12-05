@@ -58,6 +58,9 @@ git clone https://github.com/NVlabs/nvdiffrast.git
 cd nvdiffrast
 python setup.py install
 
+# torchmcubes
+cd torchmcubes
+python setup.py install
 
 ```
 
