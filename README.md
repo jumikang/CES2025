@@ -44,6 +44,7 @@ pip install -r requirements.txt
 
 # detectron2
 cd libs/detectron2
+rm -r build && mkdir build
 python setup.py install
 
 # densepose
@@ -54,14 +55,17 @@ python setup.py install
 pip install UVTextureConverter
 
 # nvdiffrast
+cd libs/nvdiffrast
 git clone https://github.com/NVlabs/nvdiffrast.git
 cd nvdiffrast
+rm -r build && mkdir build
 python setup.py install
 
 # torchmcubes
-cd torchmcubes
-python setup.py install
+pip install git+https://github.com/tatsy/torchmcubes.git
 
+#cd torchmcubes
+#python setup.py install
 ```
 
 
