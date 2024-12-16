@@ -51,8 +51,6 @@ python setup.py install
 cd libs/detectron2/projects/DensePose
 python setup.py install
 
-# uvconverter
-pip install UVTextureConverter
 
 # nvdiffrast
 cd libs/nvdiffrast
@@ -64,6 +62,9 @@ pip install git+https://github.com/tatsy/torchmcubes.git
 
 #cd torchmcubes
 #python setup.py install
+#uvconverter (already include in requirements.txt, dont need to install again)
+#pip install UVTextureConverter
+
 ```
 
 
