@@ -56,8 +56,6 @@ pip install UVTextureConverter
 
 # nvdiffrast
 cd libs/nvdiffrast
-git clone https://github.com/NVlabs/nvdiffrast.git
-cd nvdiffrast
 rm -r build && mkdir build
 python setup.py install
 
