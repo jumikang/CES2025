@@ -49,6 +49,7 @@ python setup.py install
 
 # densepose
 cd libs/detectron2/projects/DensePose
+rm -r build && mkdir build
 python setup.py install
 
 
@@ -59,11 +60,6 @@ python setup.py install
 
 # torchmcubes
 pip install git+https://github.com/tatsy/torchmcubes.git
-
-#cd torchmcubes
-#python setup.py install
-#uvconverter (already include in requirements.txt, dont need to install again)
-#pip install UVTextureConverter
 
 ```
 
